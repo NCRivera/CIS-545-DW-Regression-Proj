@@ -40,6 +40,11 @@ RedWineQuality
 corrmorant(RedWineQuality, style = "blue_red")
 ```
 
+```{r}
+ols_correlations(InitialLinearModel)
+```
+
+
 # EXTRACTING COLUMN NAMES
 
 ```{r}
