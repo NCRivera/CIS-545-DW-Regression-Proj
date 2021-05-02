@@ -91,7 +91,7 @@ BestSubsetModel
 plot(BestSubsetModel)
 ```
 
-# FINAL PLOT AND DIAGNOTICD
+# FINAL PLOT AND DIAGNOTICS
 
 ```{r}
 ols_plot_diagnostics(StepModelBackward$model)
