@@ -1,0 +1,94 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# LIBRARIES
+
+```{r}
+# install.packages("dotwhisker")
+# install.packages('TMB', type = 'source') # Required by dotwhisker package if error ocurred.
+# install.packages("remotes")
+# remotes::install_github("r-link/corrmorant")
+
+library(tidyverse)
+library(tidymodels)
+library(dotwhisker)
+library(corrmorant)
+library(olsrr)
+```
+
+# DATA IMPORTATION
+
+```{r}
+RedWineQuality   <- read.csv(file = "../data/winequality-red.csv", sep = ";") %>% tibble() 
+RedWineQuality
+RedWineQuality %>% glimpse()
+```
+
+## CLEANING COLUMN NAMES
+
+```{r}
+library(janitor)
+RedWineQuality <- RedWineQuality %>% clean_names(case = "upper_camel")
+RedWineQuality
+```
+
+# CORRELATION PLOT
+
+```{r}
+corrmorant(RedWineQuality, style = "blue_red")
+```
+
+# EXTRACTING COLUMN NAMES
+
+```{r}
+colnames(RedWineQuality)
+```
+
+
+# MODEL BUILDING
+
+```{r}
+
+LinearModel_Initial <- lm(formula = "Quality ~ FixedAcidity + VolatileAcidity + CitricAcid + ResidualSugar + Chlorides + FreeSulfurDioxide + TotalSulfurDioxide + Density + PH + Sulphates + Alcohol", data = RedWineQuality)
+summary(LinearModel_Initial)
+```
+
+# STEPWISE REGRESSION, P VALUE
+
+```{r}
+StepModelForward  <- ols_step_forward_p(LinearModel_Initial)
+StepModelBackward <- ols_step_backward_p(LinearModel_Initial)
+StepModelBoth     <- ols_step_both_p(LinearModel_Initial)
+```
+
+```{r}
+StepModelForward
+StepModelBackward
+StepModelBoth
+```
+
+
+## 3.1.1 REGRESSION DIAGNOSTICS
+```{r}
+plot(StepModelForward)
+plot(StepModelBackward)
+plot(StepModelBoth)
+```
+
+
+# 3.2 Best Subset Selection 
+
+```{r}
+BestSubsetModel <- ols_step_best_subset(model = LinearModel_Initial, metric = "rsquare")
+BestSubsetModel
+plot(BestSubsetModel)
+```
+
+# FINAL PLOT AND DIAGNOTICD
+
+```{r}
+ols_plot_diagnostics(StepModelBackward$model)
+```
+
